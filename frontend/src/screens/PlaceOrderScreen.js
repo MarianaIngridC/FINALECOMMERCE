@@ -18,9 +18,9 @@ import { toast } from 'react-toastify';
       case 'CREATE_FAIL':
         return {...state, loading:false};
       default:
-        return state;
+        return state; 
     }
-  }
+  };
 
 const PlaceOrderScreen = () => {
   const { state, dispatch: ctxDispatch } = useContext(Store);
