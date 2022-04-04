@@ -14,6 +14,7 @@ export const generateToken = (user) => {
 
 export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization;
+  console.log(authorization)
   if(authorization) {
     const token = authorization.slice(7, authorization.length);
     console.log(token);
@@ -28,6 +29,5 @@ export const isAuth = (req, res, next) => {
     })
   } else {
     res.status(401).send({message: 'No Token'});
-
   }
 }

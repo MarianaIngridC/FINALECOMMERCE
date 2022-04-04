@@ -26,6 +26,11 @@ orderRouter.post('/',isAuth, expressAsyncHandler(async(req, res) => {
   res.status(201).send({ message: 'New Order Created', order})
 }));
 
+orderRouter.get('/mine', isAuth, expressAsyncHandler(async(req, res) => {
+  const orders = await Order.find({user: req.user._id});
+  res.send(orders);
+}));
+
 orderRouter.get('/:id',isAuth, expressAsyncHandler(async(req, res) => {
   const order = await Order.findById(req.params.id);
   if(order) {
@@ -49,6 +54,8 @@ orderRouter.put('/:id/pay', isAuth, expressAsyncHandler(async(req, res) => {
 
     const updatedOrder = await order.save();
     res.send({ message: 'Order paid', order: updatedOrder})
+  } else {
+    res.status(404).send({message: 'Order Not Found'})
   }
 }))
 
