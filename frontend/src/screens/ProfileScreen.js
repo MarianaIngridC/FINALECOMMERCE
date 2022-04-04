@@ -22,6 +22,7 @@ const reducer = (state, action) => {
 const ProfileScreen = () => {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
+  console.log(userInfo);
   const [name, setName] = useState(userInfo.name)
   const [email, setEmail] = useState(userInfo.email)
   const [password, setPassword] = useState('')
