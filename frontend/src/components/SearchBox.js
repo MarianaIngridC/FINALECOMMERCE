@@ -8,8 +8,10 @@ const SearchBox = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    console.log(query)
     navigate(query ? `/search/?query=${query}` : '/search')
-  }
+  };
+
   return (
     <Form 
       className='d-flex me-auto'
@@ -25,7 +27,7 @@ const SearchBox = () => {
           aria-label='Search products'
           aria-describedby='button-search'
         ></FormControl>
-        <Button variant='outline-primary' type='submit' id='button-search'>
+        <Button variant='btn-outline-primary' type='submit' id='button-search'>
           <i className='fas fa-search'></i>
         </Button>
       </InputGroup>

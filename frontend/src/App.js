@@ -22,11 +22,12 @@ import ProfileScreen from "./screens/ProfileScreen";
 import axios from "axios";
 import { getError } from "./utils";
 import SearchBox from "./components/SearchBox";
+import SearchScreen from "./screens/SearchScreen";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
-
+  
   const signoutHandler = () => {
     ctxDispatch({ type: "USER_SIGNOUT" });
     localStorage.removeItem("userInfo");
@@ -35,17 +36,20 @@ function App() {
     window.location.href='/signin';
   };
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]);
+  console.log(categories + 'hello');
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const { data } = await axios.get(`/api/products/categories`);
         setCategories(data);
+        //console.log(data+'holaaa');
       } catch(err) {
         toast.error(getError(err))
       }
-    }
+    };
+    fetchCategories();
   },[])
   return (
     <BrowserRouter>
@@ -130,6 +134,7 @@ function App() {
             <Routes>
               <Route path="/product/:slug" element={<ProductScreen />} />
               <Route path="/cart" element={<CartScreen />} />
+              <Route path="/search" element={<SearchScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/signup" element={<SignupScreen />} />
               <Route path="/profile" element={<ProfileScreen/>} />
