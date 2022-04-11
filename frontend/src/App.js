@@ -23,21 +23,24 @@ import axios from "axios";
 import { getError } from "./utils";
 import SearchBox from "./components/SearchBox";
 import SearchScreen from "./screens/SearchScreen";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import DashboardScreen from "./screens/DashboardScreen";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
-  
+
   const signoutHandler = () => {
     ctxDispatch({ type: "USER_SIGNOUT" });
     localStorage.removeItem("userInfo");
     localStorage.removeItem("shippingAddress");
     localStorage.removeItem("paymentMethod");
-    window.location.href='/signin';
+    window.location.href = "/signin";
   };
-  const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
+  const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  console.log(categories + 'hello');
+  console.log(categories + "hello");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -45,21 +48,27 @@ function App() {
         const { data } = await axios.get(`/api/products/categories`);
         setCategories(data);
         //console.log(data+'holaaa');
-      } catch(err) {
-        toast.error(getError(err))
+      } catch (err) {
+        toast.error(getError(err));
       }
     };
     fetchCategories();
-  },[])
+  }, []);
   return (
     <BrowserRouter>
-      <div className={sidebarIsOpen ? "d-flex flex-column site-container  active-cont" : "d-flex flex-column site-container"}>
+      <div
+        className={
+          sidebarIsOpen
+            ? "d-flex flex-column site-container  active-cont"
+            : "d-flex flex-column site-container"
+        }
+      >
         <ToastContainer position="bottom-center" limit={1} />
         <header>
           <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
               <Button
-                variant='dark'
+                variant="dark"
                 onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
               >
                 <i className="fas fa-bars"></i>
@@ -69,7 +78,7 @@ function App() {
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
-                <SearchBox/>
+                <SearchBox />
                 <Nav className="me-auto w-100 justify-content-end">
                   <Link to="/cart" className="nav-link">
                     Cart
@@ -101,18 +110,35 @@ function App() {
                       Sign in
                     </Link>
                   )}
+                  {userInfo && userInfo.isAdmin && (
+                    <NavDropdown title='Admin' id='admin-nav-dropdown'>
+                      <LinkContainer to='/admin/dashboard'>
+                        <NavDropdown.Item>Dashboard</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to='/admin/productList'>
+                        <NavDropdown.Item>Products</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to='/admin/orderlist'>
+                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to='/admin/userlist'>
+                        <NavDropdown.Item>Users</NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
+                  )}
                 </Nav>
               </Navbar.Collapse>
             </Container>
           </Navbar>
         </header>
         <div
-          className={sidebarIsOpen 
-          ? 'active-nav side-navbar d-flex justify-content-between flex-wrap flex-column'
-          : 'side-navbar d-flex justify-content-between flex-wrap flex-column'
-        }
+          className={
+            sidebarIsOpen
+              ? "active-nav side-navbar d-flex justify-content-between flex-wrap flex-column"
+              : "side-navbar d-flex justify-content-between flex-wrap flex-column"
+          }
         >
-          <Nav className='flex-column text-white w-100 p-2'>
+          <Nav className="flex-column text-white w-100 p-2">
             <Nav.Item>
               <strong>Categories</strong>
             </Nav.Item>
@@ -120,7 +146,7 @@ function App() {
               <Nav.Item key={category}>
                 <LinkContainer
                   to={`/search?category=${category}`}
-                  onClick={() =>setSidebarIsOpen(false)}
+                  onClick={() => setSidebarIsOpen(false)}
                 >
                   <Nav.Link>{category}</Nav.Link>
                 </LinkContainer>
@@ -137,12 +163,46 @@ function App() {
               <Route path="/search" element={<SearchScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/signup" element={<SignupScreen />} />
-              <Route path="/profile" element={<ProfileScreen/>} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfileScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/shipping" element={<ShippingAddressScreen />} />
-              <Route path="/placeorder" element={<PlaceOrderScreen />} />
-              <Route path="/order/:id" element={<OrderScreen />} />
-              <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+              <Route
+                path="/placeorder"
+                element={
+                  <ProtectedRoute>
+                    <PlaceOrderScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order/:id"
+                element={
+                  <ProtectedRoute>
+                    <OrderScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orderhistory"
+                element={
+                  <ProtectedRoute>
+                    <OrderHistoryScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/payment" element={<PaymentMethodScreen />} />
+                {/* ADMIN ROUTES*/}
+              <Route path='/admin/dashboard' element={
+                <AdminRoute>
+                  <DashboardScreen/>
+                </AdminRoute>
+              }></Route>
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>
